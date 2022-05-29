@@ -1,4 +1,7 @@
 # SCGC-Assignment
+Miulescu Cristina-Maria
+SCPD
+
 Let's create a new working directory:
 ```bash
 mkdir assignment
