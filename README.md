@@ -12,6 +12,8 @@ As pointed in the Kubernetes lab, I used the command kind to create the Kubernet
 sudo kind create cluster
 ```
 
+<img src="./screenshots/Task0%20-%20create%20cluster.png"/>
+
 ## Task 1: Deploy the nginx service
 
 First let's add the following line to **/etc/hosts** on the host VM in order to give our service a name:
@@ -20,9 +22,15 @@ First let's add the following line to **/etc/hosts** on the host VM in order to 
 172.18.0.2 nginx promexporter
 ```
 
+Create **task1** directory:
+```bash
+mkdir task1
+cd task1
+```
+
 ### 1.1 Create a ConfigMap for the HTML content 
 
-This ConfigMap will display the html for port 80 and 30080.
+This ConfigMap will display the html for port **80** within the cluster and port  **30080** outside the cluster.
 
 #### nginx-html-configmap.yaml
 ```yml
@@ -154,60 +162,22 @@ sudo kubectl apply -f nginx-service.yaml
 
 ### Output:
 
-The output can be seen in **/screenshots** folder.
+The terminal output looks as below:
 
-```azure-cli
-student@scgc:~/scgc/assignment/task1$ sudo kubectl get pods
-NAME                    READY   STATUS    RESTARTS   AGE
-nginx-c9bb45656-b5z5z   2/2     Running   0          24s
-student@scgc:~/scgc/assignment/task1$ sudo kubectl get svc
-NAME         TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                       AGE
-kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP                       2m21s
-nginx        NodePort    10.96.198.183   <none>        80:30080/TCP,8080:30088/TCP   23s
-student@scgc:~/scgc/assignment/task1$ curl http://nginx:30080
-<html>
-    <body>
-            <h1>Hello from SCGC Assignment!</h1>
-            <h3>Miulescu Cristina-Maria, SCPD</h3>
-    </body>
-</html>
-student@scgc:~/scgc/assignment/task1$ curl http://nginx:30088
-<!DOCTYPE html>
-<html>
-<head>
-<title>Welcome to nginx!</title>
-<style>
-html { color-scheme: light dark; }
-body { width: 35em; margin: 0 auto;
-font-family: Tahoma, Verdana, Arial, sans-serif; }
-</style>
-</head>
-<body>
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
+<img src="./screenshots/Task1%20-%20output%20terminal.png"/>
 
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
+Also, in the browser:
+- left side: http://nginx:30088/metrics
+- right side: http://nginx:30080
 
-<p><em>Thank you for using nginx.</em></p>
-</body>
-</html>
-student@scgc:~/scgc/assignment/task1$ curl http://nginx:30088/metrics
-Active connections: 1 
-server accepts handled requests
- 2 2 2 
-Reading: 0 Writing: 1 Waiting: 0 
-
-```
+<img src="./screenshots/Task1%20-%20output%20browser.png"/>
 
 ## Task 2: Deploy Prometheus
 
 Next we will go to the **/task2** directory:
 
 ```bash
+mkdir task2
 cd task2
 ```
 
@@ -234,7 +204,7 @@ data:
 ```
 
 ### 2.2 Create Deployment for promexporter
-
+The promexporter will get its metrics info from http://nginx:8080/metrics :
 #### prom-deployment.yaml
 ```yaml
 apiVersion: apps/v1
@@ -278,6 +248,7 @@ spec:
 
 ### 2.3 Create Service for promexporter
 
+The promexporter will have port **9113** within the cluster and port **30081** outside the cluster:
 #### prom-service.yaml
 ```yml
 apiVersion: v1
@@ -305,50 +276,116 @@ sudo kubectl apply -f prom-service.yaml
 
 ### Output:
 
-```azurecli
-student@scgc:~/scgc/assignment/task2$ sudo kubectl get pods
-NAME                            READY   STATUS    RESTARTS   AGE
-nginx-c9bb45656-b5z5z           2/2     Running   0          27m
-promexporter-7796c99ff6-flc5k   2/2     Running   0          5m21s
-student@scgc:~/scgc/assignment/task2$ sudo kubectl get svc
-NAME           TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                       AGE
-kubernetes     ClusterIP   10.96.0.1       <none>        443/TCP                       29m
-nginx          NodePort    10.96.198.183   <none>        80:30080/TCP,8080:30088/TCP   27m
-promexporter   NodePort    10.96.109.16    <none>        9113:30081/TCP                5m18s
-student@scgc:~/scgc/assignment/task2$ curl http://promexporter:30081
-<!DOCTYPE html>
-			<title>NGINX Exporter</title>
-			<h1>NGINX Exporter</h1>
-			<p><a href="/metrics">Metrics</a></p>student@scgc:~/scgc/assignment/task2$ 
-student@scgc:~/scgc/assignment/task2$ curl http://promexporter:30081/metrics
-# HELP nginx_connections_accepted Accepted client connections
-# TYPE nginx_connections_accepted counter
-nginx_connections_accepted 5
-# HELP nginx_connections_active Active client connections
-# TYPE nginx_connections_active gauge
-nginx_connections_active 1
-# HELP nginx_connections_handled Handled client connections
-# TYPE nginx_connections_handled counter
-nginx_connections_handled 5
-# HELP nginx_connections_reading Connections where NGINX is reading the request header
-# TYPE nginx_connections_reading gauge
-nginx_connections_reading 0
-# HELP nginx_connections_waiting Idle client connections
-# TYPE nginx_connections_waiting gauge
-nginx_connections_waiting 0
-# HELP nginx_connections_writing Connections where NGINX is writing the response back to the client
-# TYPE nginx_connections_writing gauge
-nginx_connections_writing 1
-# HELP nginx_http_requests_total Total http requests
-# TYPE nginx_http_requests_total counter
-nginx_http_requests_total 7
-# HELP nginx_up Status of the last metric scrape
-# TYPE nginx_up gauge
-nginx_up 1
-# HELP nginxexporter_build_info Exporter build information
-# TYPE nginxexporter_build_info gauge
-nginxexporter_build_info{gitCommit="",version=""} 1
-student@scgc:~/scgc/assignment/task2$ 
+The terminal output:
 
+<img src="./screenshots/Task2%20-%20output%20terminal.png"/>
+
+The browser output:
+- left side: http://promexporter:30081/metrics
+- right side: http://promexporter:30081
+
+<img src="./screenshots/Task2%20-%20output%20browser.png">
+
+## Task 3: 
+
+### 3.1 Create **monitoring** namespace:
+
+```bash
+sudo kubectl create namespace monitoring
 ```
 
+### 3.2 Install prometheus using helm
+```bash
+$ sudo helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+$ sudo helm install prometheus prometheus-community/prometheus -n monitoring
+```
+
+### 3.3 Port-forrward
+
+```bash
+sudo kubectl -n monitoring port-forward services/prometheus-server 30082:80
+```
+
+### 3.4 Open a new terminal and edit the configMap of prometheus-server:
+```bash
+sudo kubectl -n monitoring edit cm prometheus-server
+```
+
+Add this line:
+```yml
+- job_name: prometheus
+      static_configs:
+      - targets:
+        - localhost:9090
+    # Add this
+    - job_name: promexporter
+      static_configs:
+      - targets:
+        - promexporter:30081
+```
+**Note:** I also tried with _promexporter.default.svc.cluster.local:9113_ as indicated but it did not show the metrics when accessing the link.
+
+### 3.5 Test
+
+```bash
+curl http://localhost:30082
+```
+
+### Output:
+
+Going to http://localhost:30082, you shold see the following:
+
+<img src="./screenshots/Task3%20-%20view.png">
+
+Under **/targets** :
+
+<img src="./screenshots/Task3%20-%20output%20browser.png">
+
+We can find under **/targets** our **promexporter**:
+
+<img src="./screenshots/Task3%20-%20output%20promexporter.png">
+
+<br/>
+
+#### Query a metric:
+
+Also, go to **Graph** and query a metric, like “nginx_connections_accepted”:
+
+<img src="./screenshots/Task3%20-%20query.png">
+
+## Task 4: Grafana
+
+### 4.1 Install Grafana
+Next, I installed Grafana using helm chart on the **monitoring** namespace:
+
+```bash
+sudo helm repo add bitnami https://charts.bitnami.com/bitnami
+sudo helm install grafana bitnami/grafana
+```
+
+<img src="./screenshots/Task4%20-%20grafana.png">
+
+
+### 4.2 Port-forward Grafana
+
+```bash
+sudo kubectl -n monitoring port-forward svc/grafana 30085:3000
+```
+
+### 4.3 Grafana UI
+
+We can access Grafana UI on http://localhost:30085, the port we forwarded to.
+
+First we have to find out the password in order to login:
+
+```bash
+student@scgc:~$ echo "Password: $(sudo kubectl get secret grafana-admin --namespace monitoring -o jsonpath="{.data.GF_SECURITY_ADMIN_PASSWORD}" | base64 --decode)"
+[sudo] password for student: 
+Password: 2kOvyXZklL
+```
+
+So the credentials are:
+- Username: admin
+- Password: 2kOvyXZklL
+
+<img src="./screenshots/Task4%20-%20grafana%20ui.png">
