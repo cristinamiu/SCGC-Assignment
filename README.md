@@ -1,6 +1,8 @@
 # SCGC-Assignment
-Miulescu Cristina-Maria
+Miulescu Cristina-Maria,
 SCPD
+
+https://github.com/cristinamiu/SCGC-Assignment
 
 Let's create a new working directory:
 ```bash
