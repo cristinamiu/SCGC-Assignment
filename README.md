@@ -389,3 +389,26 @@ So the credentials are:
 - Password: 2kOvyXZklL
 
 <img src="./screenshots/Task4%20-%20grafana%20ui.png">
+
+
+### 4.4 Create Prometheus DataSource
+
+The only field modified is the URL field: http://prometheus-server .
+
+<img src="./screenshots/Task4%20-%20datasrc.png">
+
+<img src="./screenshots/Task4%20-%20datasource.png">
+
+### 4.5 Create Prometheus Dashboard:
+
+I copied the content from https://github.com/nginxinc/nginx-prometheus-exporter/blob/main/grafana/dashboard.json .
+
+<img src="./screenshots/Task4%20-%20import%20dashboard.png">
+
+<img src="./screenshots/Task4%20-%20dasboard.png">
+
+### Output
+
+<img src="./screenshots/Task4%20-%20graphs%20connections.png">
+
+<img src="./screenshots/Task4%20-%20graphs%20connections2.png">
